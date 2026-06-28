@@ -1,0 +1,2104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Energy Explorer — Learn About Energy</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap');
+
+  :root {
+    --sun: #FF9500;
+    --sun-light: #FFF3DC;
+    --electric: #5B6EF5;
+    --electric-light: #EEF0FE;
+    --thermal: #E84A4A;
+    --thermal-light: #FEECEC;
+    --kinetic: #29B86D;
+    --kinetic-light: #E6F9EF;
+    --chemical: #9B59B6;
+    --chemical-light: #F5EDFB;
+    --nuclear: #00A3CC;
+    --nuclear-light: #E0F6FB;
+    --dark: #1A1A2E;
+    --text: #2D2D44;
+    --muted: #6B6B8A;
+    --bg: #F5F6FF;
+    --white: #FFFFFF;
+    --radius: 16px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.08);
+    --shadow-hover: 0 8px 32px rgba(0,0,0,0.14);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ===== NAV ===== */
+  nav {
+    background: var(--dark);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+
+  .nav-logo {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 1.3rem;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nav-logo span { color: var(--sun); }
+
+  .nav-links {
+    display: flex;
+    gap: 4px;
+  }
+
+  .nav-btn {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .nav-btn:hover, .nav-btn.active {
+    background: rgba(255,255,255,0.12);
+    color: var(--white);
+  }
+
+  .nav-btn.active { color: var(--sun); }
+
+  /* ===== PAGES ===== */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ===== HERO ===== */
+  .hero {
+    background: linear-gradient(135deg, var(--dark) 0%, #2D2D6B 100%);
+    padding: 5rem 2rem 4rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 20% 50%, rgba(255,149,0,0.15) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 20%, rgba(91,110,245,0.2) 0%, transparent 40%),
+                      radial-gradient(circle at 60% 80%, rgba(41,184,109,0.15) 0%, transparent 40%);
+  }
+
+  .hero-content { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
+
+  .hero-badge {
+    display: inline-block;
+    background: rgba(255,149,0,0.2);
+    color: var(--sun);
+    border: 1px solid rgba(255,149,0,0.4);
+    border-radius: 50px;
+    padding: 6px 18px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero h1 {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    color: var(--white);
+    line-height: 1.15;
+    margin-bottom: 1rem;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--sun);
+  }
+
+  .hero p {
+    font-size: 1.15rem;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.7;
+    max-width: 500px;
+    margin: 0 auto 2.5rem;
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: var(--sun);
+    color: var(--dark);
+    border: none;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    padding: 14px 28px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(255,149,0,0.4);
+  }
+
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,149,0,0.5); }
+
+  .btn-secondary {
+    background: rgba(255,255,255,0.12);
+    color: var(--white);
+    border: 1px solid rgba(255,255,255,0.25);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 14px 28px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+
+  /* ===== ENERGY CARDS GRID ===== */
+  .section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+  }
+
+  .section-title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 1.9rem;
+    color: var(--dark);
+    margin-bottom: 0.4rem;
+  }
+
+  .section-sub {
+    color: var(--muted);
+    font-size: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .energy-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  .energy-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    cursor: pointer;
+    transition: all 0.25s;
+    border: 2px solid transparent;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .energy-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--accent);
+  }
+
+  .energy-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--accent);
+  }
+
+  .energy-card .icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .energy-card h3 {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: var(--dark);
+    margin-bottom: 0.5rem;
+  }
+
+  .energy-card p {
+    font-size: 0.95rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .energy-tag {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    background: var(--tag-bg);
+    color: var(--tag-color);
+  }
+
+  /* ===== ENERGY LAW BANNER ===== */
+  .law-banner {
+    background: linear-gradient(135deg, var(--dark), #2D2D6B);
+    border-radius: var(--radius);
+    padding: 2.5rem;
+    text-align: center;
+    color: white;
+    margin: 0 2rem 3rem;
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .law-banner h2 {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 1.6rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .law-banner p { color: rgba(255,255,255,0.8); font-size: 1.05rem; line-height: 1.7; }
+
+  .law-highlight {
+    background: rgba(255,149,0,0.2);
+    border: 1px solid rgba(255,149,0,0.4);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    margin-top: 1.25rem;
+    color: #FFD580;
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  /* ===== SIMULATIONS PAGE ===== */
+  .sim-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+
+  .sim-tab {
+    padding: 10px 20px;
+    border-radius: 50px;
+    border: 2px solid #ddd;
+    background: var(--white);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--muted);
+  }
+
+  .sim-tab.active, .sim-tab:hover {
+    border-color: var(--electric);
+    background: var(--electric-light);
+    color: var(--electric);
+  }
+
+  .sim-panel { display: none; }
+  .sim-panel.active { display: block; }
+
+  .sim-box {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 2rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+  }
+
+  .sim-box h3 {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: var(--dark);
+    margin-bottom: 0.5rem;
+  }
+
+  .sim-box p.desc {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  /* Rollercoaster canvas area */
+  .canvas-wrap {
+    background: #F0F4FF;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  canvas { display: block; width: 100%; }
+
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+
+  .slider-row label {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--dark);
+    min-width: 110px;
+  }
+
+  .slider-row input[type=range] {
+    flex: 1;
+    min-width: 120px;
+    accent-color: var(--electric);
+  }
+
+  .slider-val {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--electric);
+    min-width: 50px;
+  }
+
+  .energy-bar-wrap {
+    display: flex;
+    gap: 12px;
+    margin-top: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .energy-bar-item {
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .ebar-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .ebar-track {
+    height: 22px;
+    background: #eee;
+    border-radius: 50px;
+    overflow: hidden;
+  }
+
+  .ebar-fill {
+    height: 100%;
+    border-radius: 50px;
+    transition: width 0.1s;
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: white;
+  }
+
+  /* Solar panel sim */
+  .solar-display {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .solar-visual {
+    flex: 1;
+    min-width: 220px;
+    background: #87CEEB;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    position: relative;
+    min-height: 200px;
+    overflow: hidden;
+  }
+
+  .sun-icon {
+    font-size: 3rem;
+    transition: all 0.3s;
+    display: block;
+    margin: 0 auto 0.5rem;
+  }
+
+  .panel-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    margin-top: 1rem;
+  }
+
+  .panel-cell {
+    height: 30px;
+    border-radius: 3px;
+    background: #1a237e;
+    border: 1px solid #3949ab;
+    transition: background 0.3s;
+  }
+
+  .solar-stats {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .stat-box {
+    background: #f8f9ff;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 12px;
+    border-left: 4px solid var(--electric);
+  }
+
+  .stat-box .s-label { font-size: 0.82rem; color: var(--muted); font-weight: 600; margin-bottom: 2px; }
+  .stat-box .s-val { font-size: 1.6rem; font-weight: 800; font-family: 'Nunito', sans-serif; color: var(--dark); }
+
+  /* Chemical energy sim */
+  .reaction-area {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 1.5rem;
+    background: #f8f9ff;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+  }
+
+  .molecule {
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  .molecule:hover { transform: scale(1.1); }
+
+  .mol-circle {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    margin: 0 auto 6px;
+    border: 3px solid rgba(0,0,0,0.1);
+  }
+
+  .mol-label { font-size: 0.85rem; font-weight: 700; color: var(--dark); }
+
+  .reaction-arrow {
+    font-size: 2rem;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  .reaction-result {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    text-align: center;
+    border: 2px dashed #ddd;
+    min-width: 200px;
+    transition: all 0.3s;
+  }
+
+  .reaction-result.active {
+    border-color: var(--kinetic);
+    background: var(--kinetic-light);
+  }
+
+  /* Thermal sim */
+  .thermal-visual {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    padding: 1rem;
+    background: #f8f9ff;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    min-height: 200px;
+  }
+
+  .thermometer-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .thermometer {
+    width: 30px;
+    height: 150px;
+    background: #ddd;
+    border-radius: 15px;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid #bbb;
+  }
+
+  .therm-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 0 0 15px 15px;
+    transition: height 0.5s, background 0.5s;
+  }
+
+  .therm-label { font-size: 0.85rem; font-weight: 700; color: var(--dark); }
+
+  .particle-zone {
+    flex: 1;
+    min-width: 200px;
+    height: 160px;
+    background: white;
+    border-radius: 10px;
+    border: 2px solid #eee;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .particle {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--thermal);
+  }
+
+  /* ===== QUIZ PAGE ===== */
+  .quiz-wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+  }
+
+  .quiz-header {
+    background: linear-gradient(135deg, var(--dark), #2D2D6B);
+    color: white;
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .quiz-header h2 {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .quiz-header p { color: rgba(255,255,255,0.75); }
+
+  .progress-bar-wrap {
+    background: rgba(255,255,255,0.2);
+    border-radius: 50px;
+    height: 10px;
+    margin-top: 1.25rem;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--sun);
+    border-radius: 50px;
+    transition: width 0.4s;
+  }
+
+  .quiz-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 2rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+  }
+
+  .q-number {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--electric);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  .q-text {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: var(--dark);
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+  }
+
+  .q-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .q-option {
+    background: #f8f9ff;
+    border: 2px solid #e8e9ff;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    font-size: 0.98rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    text-align: left;
+    color: var(--text);
+  }
+
+  .q-option:hover:not(:disabled) {
+    border-color: var(--electric);
+    background: var(--electric-light);
+    color: var(--electric);
+  }
+
+  .q-option.correct {
+    border-color: var(--kinetic);
+    background: var(--kinetic-light);
+    color: #1a7a4a;
+  }
+
+  .q-option.wrong {
+    border-color: var(--thermal);
+    background: var(--thermal-light);
+    color: #a83232;
+  }
+
+  .q-option:disabled { cursor: default; }
+
+  .q-feedback {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: none;
+  }
+
+  .q-feedback.show { display: block; }
+  .q-feedback.correct { background: var(--kinetic-light); color: #1a7a4a; }
+  .q-feedback.wrong { background: var(--thermal-light); color: #a83232; }
+
+  .quiz-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .score-display {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--dark);
+  }
+
+  .btn-next {
+    background: var(--electric);
+    color: white;
+    border: none;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    padding: 12px 28px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: none;
+  }
+
+  .btn-next.show { display: inline-block; }
+  .btn-next:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(91,110,245,0.35); }
+
+  /* Results */
+  .results-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 3rem 2rem;
+    box-shadow: var(--shadow);
+    text-align: center;
+    display: none;
+  }
+
+  .results-card.show { display: block; }
+
+  .results-emoji { font-size: 4rem; margin-bottom: 1rem; }
+
+  .results-card h2 {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 2rem;
+    color: var(--dark);
+    margin-bottom: 0.5rem;
+  }
+
+  .score-big {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 3.5rem;
+    color: var(--electric);
+    margin: 1rem 0;
+  }
+
+  .results-card p { color: var(--muted); font-size: 1rem; margin-bottom: 1.5rem; }
+
+  .btn-retry {
+    background: var(--sun);
+    color: var(--dark);
+    border: none;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    padding: 14px 32px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-retry:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,149,0,0.4); }
+
+  /* ===== LEARN PAGE ===== */
+  .learn-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  @media (max-width: 700px) {
+    .learn-layout { grid-template-columns: 1fr; }
+    nav { padding: 0 1rem; }
+    .nav-btn { padding: 6px 10px; font-size: 0.82rem; }
+  }
+
+  .learn-sidebar {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 80px;
+  }
+
+  .sidebar-title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--dark);
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #f0f0f0;
+  }
+
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 4px;
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--muted);
+  }
+
+  .sidebar-item:hover, .sidebar-item.active {
+    background: var(--electric-light);
+    color: var(--electric);
+  }
+
+  .sidebar-item .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .learn-content-panel { display: none; }
+  .learn-content-panel.active { display: block; }
+
+  .learn-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 2.5rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+  }
+
+  .learn-card h2 {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 1.6rem;
+    color: var(--dark);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .learn-card p {
+    color: var(--text);
+    font-size: 1rem;
+    line-height: 1.75;
+    margin-bottom: 1rem;
+  }
+
+  .fun-fact {
+    background: var(--sun-light);
+    border-left: 4px solid var(--sun);
+    border-radius: 0 10px 10px 0;
+    padding: 1rem 1.25rem;
+    margin: 1.25rem 0;
+  }
+
+  .fun-fact .ff-label {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--sun);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
+
+  .fun-fact p { color: var(--dark); margin: 0; font-weight: 600; }
+
+  .examples-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+    margin-top: 1rem;
+  }
+
+  .example-pill {
+    background: #f0f4ff;
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--dark);
+  }
+
+  .example-pill .ep-icon { font-size: 1.5rem; display: block; margin-bottom: 4px; }
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .float { animation: float 3s ease-in-out infinite; }
+  .pulse { animation: pulse-glow 2s ease-in-out infinite; }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    color: var(--muted);
+    font-size: 0.88rem;
+    border-top: 1px solid #eee;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">⚡ <span>Energy</span>Explorer</div>
+  <div class="nav-links">
+    <button class="nav-btn active" onclick="showPage('home')">🏠 Home</button>
+    <button class="nav-btn" onclick="showPage('learn')">📚 Learn</button>
+    <button class="nav-btn" onclick="showPage('sim')">🔬 Simulations</button>
+    <button class="nav-btn" onclick="showPage('quiz')">🎯 Quiz</button>
+  </div>
+</nav>
+
+<!-- ======================== HOME PAGE ======================== -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">⚡ Grades 6–9 Science</div>
+      <h1>What is <em>Energy</em>, and<br>why does it matter?</h1>
+      <p>Energy makes everything happen — from a rocket launching to a light bulb glowing. Let's explore the amazing world of energy together!</p>
+      <div class="hero-ctas">
+        <button class="btn-primary" onclick="showPage('learn')">Start Learning 📚</button>
+        <button class="btn-secondary" onclick="showPage('sim')">Try Simulations 🔬</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🌍 Types of Energy</div>
+    <div class="section-sub">Click any card to learn more about that type of energy!</div>
+
+    <div class="energy-grid">
+      <div class="energy-card" style="--accent: #FF9500;" onclick="goLearn('kinetic')">
+        <div class="icon">🏃</div>
+        <h3>Kinetic Energy</h3>
+        <p>The energy of <strong>motion</strong>! Anything that moves has kinetic energy — a rolling ball, a flying bird, or even you running!</p>
+        <span class="energy-tag" style="--tag-bg: #FFF3DC; --tag-color: #A85C00;">Energy of Motion</span>
+      </div>
+
+      <div class="energy-card" style="--accent: #5B6EF5;" onclick="goLearn('potential')">
+        <div class="icon">🏔️</div>
+        <h3>Potential Energy</h3>
+        <p>Stored energy waiting to be used! A stretched rubber band, a book on a shelf, and a dam all have potential energy ready to release.</p>
+        <span class="energy-tag" style="--tag-bg: #EEF0FE; --tag-color: #2D3BB5;">Stored Energy</span>
+      </div>
+
+      <div class="energy-card" style="--accent: #E84A4A;" onclick="goLearn('thermal')">
+        <div class="icon">🔥</div>
+        <h3>Thermal Energy</h3>
+        <p>Heat energy from the movement of tiny particles (atoms) inside objects. The faster particles move, the hotter something is!</p>
+        <span class="energy-tag" style="--tag-bg: #FEECEC; --tag-color: #9B2222;">Heat Energy</span>
+      </div>
+
+      <div class="energy-card" style="--accent: #FFCC00;" onclick="goLearn('light')">
+        <div class="icon">💡</div>
+        <h3>Light Energy</h3>
+        <p>Energy that travels in waves at incredible speed (300,000 km/s!). Without light energy from the Sun, life on Earth couldn't exist.</p>
+        <span class="energy-tag" style="--tag-bg: #FFFDE7; --tag-color: #8B6500;">Radiant Energy</span>
+      </div>
+
+      <div class="energy-card" style="--accent: #9B59B6;" onclick="goLearn('chemical')">
+        <div class="icon">⚗️</div>
+        <h3>Chemical Energy</h3>
+        <p>Energy stored in the bonds between atoms in molecules. Food, batteries, and gasoline all store chemical energy!</p>
+        <span class="energy-tag" style="--tag-bg: #F5EDFB; --tag-color: #6A1A8A;">Bond Energy</span>
+      </div>
+
+      <div class="energy-card" style="--accent: #5B6EF5;" onclick="goLearn('electrical')">
+        <div class="icon">⚡</div>
+        <h3>Electrical Energy</h3>
+        <p>Energy from moving electric charges (electrons). This powers your phone, lights, computers, and most modern technology!</p>
+        <span class="energy-tag" style="--tag-bg: #EEF0FE; --tag-color: #2D3BB5;">Electron Flow</span>
+      </div>
+
+      <div class="energy-card" style="--accent: #29B86D;" onclick="goLearn('solar')">
+        <div class="icon">☀️</div>
+        <h3>Solar Energy</h3>
+        <p>Energy from the Sun! Solar panels can turn sunlight into electricity. The Sun produces enough energy in one second to power Earth for 500,000 years!</p>
+        <span class="energy-tag" style="--tag-bg: #E6F9EF; --tag-color: #1A5C3A;">Renewable</span>
+      </div>
+
+      <div class="energy-card" style="--accent: #00A3CC;" onclick="goLearn('nuclear')">
+        <div class="icon">⚛️</div>
+        <h3>Nuclear Energy</h3>
+        <p>Energy stored in the nucleus (center) of an atom. Nuclear power plants split atoms to release huge amounts of energy for electricity!</p>
+        <span class="energy-tag" style="--tag-bg: #E0F6FB; --tag-color: #005C77;">Atomic Energy</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding: 0 2rem; max-width: 1100px; margin: 0 auto 4rem;">
+    <div class="law-banner">
+      <h2>⚖️ The Most Important Law in Physics</h2>
+      <p>No matter what happens, energy is <strong>never created or destroyed</strong>.<br>It only changes from one form to another. This is called...</p>
+      <div class="law-highlight">🔄 The Law of Conservation of Energy</div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== LEARN PAGE ======================== -->
+<div id="page-learn" class="page">
+  <div class="section">
+    <div class="section-title">📚 Deep Dive: Energy Types</div>
+    <div class="section-sub">Choose a topic from the sidebar to start learning!</div>
+
+    <div class="learn-layout">
+      <div class="learn-sidebar">
+        <div class="sidebar-title">Energy Topics</div>
+        <div class="sidebar-item active" onclick="showLearn('kinetic')" id="sbar-kinetic">
+          <div class="dot" style="background:#FF9500"></div> Kinetic Energy
+        </div>
+        <div class="sidebar-item" onclick="showLearn('potential')" id="sbar-potential">
+          <div class="dot" style="background:#5B6EF5"></div> Potential Energy
+        </div>
+        <div class="sidebar-item" onclick="showLearn('thermal')" id="sbar-thermal">
+          <div class="dot" style="background:#E84A4A"></div> Thermal Energy
+        </div>
+        <div class="sidebar-item" onclick="showLearn('light')" id="sbar-light">
+          <div class="dot" style="background:#FFCC00"></div> Light Energy
+        </div>
+        <div class="sidebar-item" onclick="showLearn('chemical')" id="sbar-chemical">
+          <div class="dot" style="background:#9B59B6"></div> Chemical Energy
+        </div>
+        <div class="sidebar-item" onclick="showLearn('electrical')" id="sbar-electrical">
+          <div class="dot" style="background:#5B6EF5"></div> Electrical Energy
+        </div>
+        <div class="sidebar-item" onclick="showLearn('solar')" id="sbar-solar">
+          <div class="dot" style="background:#29B86D"></div> Solar Energy
+        </div>
+        <div class="sidebar-item" onclick="showLearn('nuclear')" id="sbar-nuclear">
+          <div class="dot" style="background:#00A3CC"></div> Nuclear Energy
+        </div>
+        <div class="sidebar-item" onclick="showLearn('conservation')" id="sbar-conservation">
+          <div class="dot" style="background:#FF9500"></div> Conservation Law
+        </div>
+      </div>
+
+      <div>
+        <!-- KINETIC -->
+        <div class="learn-content-panel active" id="learn-kinetic">
+          <div class="learn-card">
+            <h2>🏃 Kinetic Energy</h2>
+            <p>Kinetic energy is the energy an object has because it is <strong>moving</strong>. The word "kinetic" comes from a Greek word meaning motion. Any object that is moving — a car, a ball, even air — has kinetic energy!</p>
+            <p>The faster something moves, or the heavier it is, the more kinetic energy it has. Imagine a bowling ball rolling slowly versus a baseball flying at full speed — they both have kinetic energy, but in different amounts.</p>
+            <div class="fun-fact">
+              <div class="ff-label">⚡ Fun Fact!</div>
+              <p>A car crash is kinetic energy being converted to other forms — sound, heat, and the energy that crumples the metal. Seatbelts and airbags slow you down gradually to protect you!</p>
+            </div>
+            <p><strong>Formula:</strong> KE = ½ × mass × speed²</p>
+            <p>This means if you double your speed, your kinetic energy becomes 4 times larger! That's why speeding in a car is so dangerous.</p>
+            <div class="examples-grid">
+              <div class="example-pill"><span class="ep-icon">🏈</span>Thrown ball</div>
+              <div class="example-pill"><span class="ep-icon">🌊</span>Ocean waves</div>
+              <div class="example-pill"><span class="ep-icon">🚗</span>Moving car</div>
+              <div class="example-pill"><span class="ep-icon">💨</span>Wind</div>
+              <div class="example-pill"><span class="ep-icon">🚂</span>Train</div>
+              <div class="example-pill"><span class="ep-icon">⚡</span>Electrons</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- POTENTIAL -->
+        <div class="learn-content-panel" id="learn-potential">
+          <div class="learn-card">
+            <h2>🏔️ Potential Energy</h2>
+            <p>Potential energy is <strong>stored energy</strong> — energy that has the potential (possibility) to do work. Think of it as energy that's waiting, ready to be released and turned into kinetic energy!</p>
+            <p>There are different types of potential energy. <strong>Gravitational potential energy</strong> depends on how high something is. A roller coaster at the top of a hill has lots of it — which it converts to speed on the way down!</p>
+            <p><strong>Elastic potential energy</strong> is stored when you stretch or compress something — like a spring, a rubber band, or a bow and arrow.</p>
+            <div class="fun-fact">
+              <div class="ff-label">⚡ Fun Fact!</div>
+              <p>Water behind a dam has massive gravitational potential energy. When released, it flows down and spins turbines to make electricity. That's hydroelectric power!</p>
+            </div>
+            <div class="examples-grid">
+              <div class="example-pill"><span class="ep-icon">🎢</span>Roller coaster top</div>
+              <div class="example-pill"><span class="ep-icon">🏹</span>Drawn bow</div>
+              <div class="example-pill"><span class="ep-icon">📚</span>Book on shelf</div>
+              <div class="example-pill"><span class="ep-icon">💧</span>Water in dam</div>
+              <div class="example-pill"><span class="ep-icon">🌸</span>Compressed spring</div>
+              <div class="example-pill"><span class="ep-icon">🎈</span>Stretched balloon</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- THERMAL -->
+        <div class="learn-content-panel" id="learn-thermal">
+          <div class="learn-card">
+            <h2>🔥 Thermal Energy</h2>
+            <p>Thermal energy is <strong>heat energy</strong>. Everything is made of tiny particles called atoms and molecules. These particles are always moving — vibrating, bouncing, spinning. The more they move, the more thermal energy an object has!</p>
+            <p>Temperature measures how fast particles are moving on average. When you heat something up, you're giving its particles more energy, making them move faster.</p>
+            <p>Heat always flows from <strong>hot to cold</strong>. That's why ice melts in your hand — the warmth from your hand flows into the cold ice!</p>
+            <div class="fun-fact">
+              <div class="ff-label">⚡ Fun Fact!</div>
+              <p>At absolute zero (−273°C), particles would stop moving completely. Nothing in the universe has ever been cooled to exactly absolute zero — it's the coldest possible temperature!</p>
+            </div>
+            <div class="examples-grid">
+              <div class="example-pill"><span class="ep-icon">☀️</span>Sunlight warming</div>
+              <div class="example-pill"><span class="ep-icon">🍕</span>Hot food</div>
+              <div class="example-pill"><span class="ep-icon">🌋</span>Volcano lava</div>
+              <div class="example-pill"><span class="ep-icon">🧊</span>Ice melting</div>
+              <div class="example-pill"><span class="ep-icon">💻</span>Computer chip</div>
+              <div class="example-pill"><span class="ep-icon">🏠</span>Heating system</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LIGHT -->
+        <div class="learn-content-panel" id="learn-light">
+          <div class="learn-card">
+            <h2>💡 Light Energy</h2>
+            <p>Light energy, also called <strong>radiant energy</strong>, travels in waves through space. Unlike sound, light doesn't need anything to travel through — it can move through the vacuum of outer space!</p>
+            <p>Light travels at about 300,000 kilometers per second — the fastest speed in the universe. Light from the Sun takes about 8 minutes to reach Earth!</p>
+            <p>The light you can see (visible light) is just a small part of the electromagnetic spectrum, which also includes radio waves, microwaves, X-rays, and ultraviolet light.</p>
+            <div class="fun-fact">
+              <div class="ff-label">⚡ Fun Fact!</div>
+              <p>When you see a star twinkling, you're seeing light that left that star hundreds or even thousands of years ago. You're literally looking back in time!</p>
+            </div>
+            <div class="examples-grid">
+              <div class="example-pill"><span class="ep-icon">🌈</span>Rainbow</div>
+              <div class="example-pill"><span class="ep-icon">📡</span>Radio waves</div>
+              <div class="example-pill"><span class="ep-icon">🔬</span>X-rays</div>
+              <div class="example-pill"><span class="ep-icon">🕶️</span>UV rays</div>
+              <div class="example-pill"><span class="ep-icon">📱</span>WiFi signals</div>
+              <div class="example-pill"><span class="ep-icon">💡</span>Light bulb</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CHEMICAL -->
+        <div class="learn-content-panel" id="learn-chemical">
+          <div class="learn-card">
+            <h2>⚗️ Chemical Energy</h2>
+            <p>Chemical energy is stored in the <strong>bonds between atoms</strong> in molecules. When a chemical reaction happens, bonds break and form, releasing or absorbing energy. When bonds break and energy is released, we get light, heat, or electricity!</p>
+            <p>Your body uses chemical energy from food. When you eat, your body breaks down molecules like glucose (sugar) and releases energy to power your muscles, brain, and every cell.</p>
+            <p>Batteries store chemical energy and convert it to electrical energy when connected to a circuit. Cars use the chemical energy in gasoline — burning it creates hot gases that push pistons to move the car.</p>
+            <div class="fun-fact">
+              <div class="ff-label">⚡ Fun Fact!</div>
+              <p>The human body converts about 2,000–3,000 food calories per day into energy. If all that energy were released at once as heat, it would take over 3 hours to boil a pot of water!</p>
+            </div>
+            <div class="examples-grid">
+              <div class="example-pill"><span class="ep-icon">🍎</span>Food calories</div>
+              <div class="example-pill"><span class="ep-icon">🔋</span>Battery</div>
+              <div class="example-pill"><span class="ep-icon">⛽</span>Gasoline</div>
+              <div class="example-pill"><span class="ep-icon">🪵</span>Burning wood</div>
+              <div class="example-pill"><span class="ep-icon">💥</span>Explosives</div>
+              <div class="example-pill"><span class="ep-icon">🕯️</span>Candle flame</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ELECTRICAL -->
+        <div class="learn-content-panel" id="learn-electrical">
+          <div class="learn-card">
+            <h2>⚡ Electrical Energy</h2>
+            <p>Electrical energy comes from the movement of tiny particles called <strong>electrons</strong>. Electrons are part of atoms, and in some materials (like copper wire), they can flow freely from atom to atom — this flow of electrons is called electric current!</p>
+            <p>Electrical energy is incredibly useful because it's easy to transport through wires and convert into other forms of energy. Light bulbs convert it to light. Heaters convert it to heat. Speakers convert it to sound.</p>
+            <p>We generate electricity in power plants by spinning large magnets inside coils of wire — this is called electromagnetic induction. The spinning can be powered by steam (from coal, gas, or nuclear), wind, or water.</p>
+            <div class="fun-fact">
+              <div class="ff-label">⚡ Fun Fact!</div>
+              <p>Lightning is a massive discharge of electrical energy. A single bolt of lightning can be 5 times hotter than the surface of the Sun, reaching 30,000 Kelvin!</p>
+            </div>
+            <div class="examples-grid">
+              <div class="example-pill"><span class="ep-icon">💻</span>Computer</div>
+              <div class="example-pill"><span class="ep-icon">📱</span>Smartphone</div>
+              <div class="example-pill"><span class="ep-icon">🔌</span>Power outlet</div>
+              <div class="example-pill"><span class="ep-icon">⚡</span>Lightning</div>
+              <div class="example-pill"><span class="ep-icon">💡</span>Light bulb</div>
+              <div class="example-pill"><span class="ep-icon">🎵</span>Speaker</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SOLAR -->
+        <div class="learn-content-panel" id="learn-solar">
+          <div class="learn-card">
+            <h2>☀️ Solar Energy</h2>
+            <p>Solar energy comes from the <strong>Sun</strong>! The Sun produces energy through nuclear fusion — hydrogen atoms fuse together to form helium, releasing enormous amounts of energy as light and heat.</p>
+            <p>Solar panels (also called photovoltaic cells) use special materials called semiconductors to convert sunlight directly into electricity. When photons (light particles) hit the panel, they knock electrons loose, creating electric current!</p>
+            <p>Solar energy is <strong>renewable</strong> — meaning it won't run out (at least not for another 5 billion years when the Sun will eventually fade). It produces no pollution while generating electricity.</p>
+            <div class="fun-fact">
+              <div class="ff-label">⚡ Fun Fact!</div>
+              <p>The amount of solar energy that hits Earth in just one hour is enough to power the entire world for a whole year! We just need to get better at capturing it all.</p>
+            </div>
+            <div class="examples-grid">
+              <div class="example-pill"><span class="ep-icon">🏡</span>Rooftop panels</div>
+              <div class="example-pill"><span class="ep-icon">🚗</span>Solar car</div>
+              <div class="example-pill"><span class="ep-icon">🛸</span>Space station</div>
+              <div class="example-pill"><span class="ep-icon">🌻</span>Plants (photosynthesis)</div>
+              <div class="example-pill"><span class="ep-icon">🌡️</span>Solar water heater</div>
+              <div class="example-pill"><span class="ep-icon">💡</span>Solar street light</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NUCLEAR -->
+        <div class="learn-content-panel" id="learn-nuclear">
+          <div class="learn-card">
+            <h2>⚛️ Nuclear Energy</h2>
+            <p>Nuclear energy is stored in the <strong>nucleus</strong> (center) of atoms. There are two ways to release it: <strong>fission</strong> (splitting large atoms apart) and <strong>fusion</strong> (joining small atoms together).</p>
+            <p>Nuclear power plants use fission — they split uranium or plutonium atoms, which releases enormous heat. That heat boils water into steam, which spins turbines to generate electricity.</p>
+            <p>Nuclear fusion is what powers the Sun! Scientists are working hard to build fusion power plants on Earth — fusion produces even more energy than fission and creates almost no waste.</p>
+            <div class="fun-fact">
+              <div class="ff-label">⚡ Fun Fact!</div>
+              <p>A single uranium fuel pellet — about the size of a gummy bear — contains as much energy as 480 gallons of oil, 1 ton of coal, or 17,000 cubic feet of natural gas!</p>
+            </div>
+            <div class="examples-grid">
+              <div class="example-pill"><span class="ep-icon">🏭</span>Power plant</div>
+              <div class="example-pill"><span class="ep-icon">🚢</span>Nuclear sub</div>
+              <div class="example-pill"><span class="ep-icon">☀️</span>The Sun (fusion)</div>
+              <div class="example-pill"><span class="ep-icon">⚕️</span>Medical scans</div>
+              <div class="example-pill"><span class="ep-icon">🛸</span>Space probes</div>
+              <div class="example-pill"><span class="ep-icon">🔬</span>Research reactors</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONSERVATION -->
+        <div class="learn-content-panel" id="learn-conservation">
+          <div class="learn-card">
+            <h2>⚖️ Conservation of Energy</h2>
+            <p>The <strong>Law of Conservation of Energy</strong> is one of the most important laws in all of science. It states that <em>energy can never be created or destroyed — it can only be transformed from one form to another.</em></p>
+            <p>Think about riding a roller coaster. At the top, you have maximum potential energy and almost zero kinetic energy. As you zoom down, potential energy converts to kinetic energy. The total always stays the same!</p>
+            <p>When you eat food, chemical energy becomes kinetic energy (movement), thermal energy (body heat), and electrical energy (nerve signals). Even when energy seems to "disappear," it just transforms into heat, which spreads out into the environment.</p>
+            <div class="fun-fact">
+              <div class="ff-label">⚡ Fun Fact!</div>
+              <p>This law was first properly stated by Julius Robert Mayer in 1842. Before that, scientists didn't fully understand that heat and motion were just different forms of the same thing!</p>
+            </div>
+            <p><strong>Energy transformation examples:</strong></p>
+            <div class="examples-grid">
+              <div class="example-pill"><span class="ep-icon">🔋→⚡</span>Battery → Electricity</div>
+              <div class="example-pill"><span class="ep-icon">⚡→💡</span>Electricity → Light</div>
+              <div class="example-pill"><span class="ep-icon">🍎→💪</span>Food → Movement</div>
+              <div class="example-pill"><span class="ep-icon">☀️→🌱</span>Light → Food (plants)</div>
+              <div class="example-pill"><span class="ep-icon">🏔️→⚡</span>Water → Electricity</div>
+              <div class="example-pill"><span class="ep-icon">💨→⚡</span>Wind → Electricity</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== SIMULATIONS PAGE ======================== -->
+<div id="page-sim" class="page">
+  <div class="section">
+    <div class="section-title">🔬 Interactive Simulations</div>
+    <div class="section-sub">Play with these simulations to see energy in action!</div>
+
+    <div class="sim-tabs">
+      <button class="sim-tab active" onclick="showSim('coaster')">🎢 Roller Coaster</button>
+      <button class="sim-tab" onclick="showSim('solar')">☀️ Solar Panel</button>
+      <button class="sim-tab" onclick="showSim('thermal')">🌡️ Thermal</button>
+      <button class="sim-tab" onclick="showSim('circuit')">⚡ Electric Circuit</button>
+    </div>
+
+    <!-- ROLLER COASTER SIM -->
+    <div class="sim-panel active" id="sim-coaster">
+      <div class="sim-box">
+        <h3>🎢 Roller Coaster — Potential vs. Kinetic Energy</h3>
+        <p class="desc">Drag the height slider to change the starting hill height. Watch how potential energy (stored at the top) converts to kinetic energy (speed at the bottom)! The total energy never changes.</p>
+        <div class="slider-row">
+          <label>Hill Height:</label>
+          <input type="range" id="hill-height" min="50" max="180" value="120" oninput="updateCoaster()">
+          <span class="slider-val" id="height-val">120m</span>
+        </div>
+        <div class="slider-row">
+          <label>Cart Mass:</label>
+          <input type="range" id="cart-mass" min="300" max="1000" value="500" step="50" oninput="updateCoaster()">
+          <span class="slider-val" id="mass-val">500kg</span>
+        </div>
+        <div class="canvas-wrap">
+          <canvas id="coaster-canvas" height="220"></canvas>
+        </div>
+        <div class="energy-bar-wrap">
+          <div class="energy-bar-item">
+            <div class="ebar-label" style="color:#5B6EF5">⬆️ Potential Energy</div>
+            <div class="ebar-track">
+              <div class="ebar-fill" id="pe-bar" style="background:#5B6EF5; width:70%">PE</div>
+            </div>
+          </div>
+          <div class="energy-bar-item">
+            <div class="ebar-label" style="color:#29B86D">⚡ Kinetic Energy</div>
+            <div class="ebar-track">
+              <div class="ebar-fill" id="ke-bar" style="background:#29B86D; width:30%">KE</div>
+            </div>
+          </div>
+          <div class="energy-bar-item">
+            <div class="ebar-label" style="color:#FF9500">🔋 Total Energy</div>
+            <div class="ebar-track">
+              <div class="ebar-fill" id="te-bar" style="background:#FF9500; width:100%">Total</div>
+            </div>
+          </div>
+        </div>
+        <p id="coaster-info" style="margin-top:1rem; font-size:0.92rem; color:var(--muted); line-height:1.6;"></p>
+      </div>
+    </div>
+
+    <!-- SOLAR PANEL SIM -->
+    <div class="sim-panel" id="sim-solar">
+      <div class="sim-box">
+        <h3>☀️ Solar Panel — How Sunlight Becomes Electricity</h3>
+        <p class="desc">Adjust the sun intensity and number of panels to see how much electricity you can generate. A typical house uses about 30 kWh per day!</p>
+        <div class="slider-row">
+          <label>☀️ Sun Intensity:</label>
+          <input type="range" id="sun-intensity" min="0" max="100" value="70" oninput="updateSolar()">
+          <span class="slider-val" id="sun-val">70%</span>
+        </div>
+        <div class="slider-row">
+          <label>🟦 Panel Count:</label>
+          <input type="range" id="panel-count" min="1" max="20" value="8" oninput="updateSolar()">
+          <span class="slider-val" id="panel-val">8 panels</span>
+        </div>
+        <div class="solar-display">
+          <div class="solar-visual" id="solar-sky">
+            <span class="sun-icon" id="sun-emoji">☀️</span>
+            <div style="font-size:0.85rem; color:rgba(255,255,255,0.8); margin-bottom:8px; font-weight:600;">Sunlight</div>
+            <div class="panel-grid" id="panel-grid"></div>
+          </div>
+          <div class="solar-stats">
+            <div class="stat-box">
+              <div class="s-label">⚡ Power Output</div>
+              <div class="s-val" id="solar-power">0 W</div>
+            </div>
+            <div class="stat-box" style="border-left-color: var(--kinetic)">
+              <div class="s-label">📅 Daily Energy</div>
+              <div class="s-val" id="solar-daily">0 kWh</div>
+            </div>
+            <div class="stat-box" style="border-left-color: var(--sun)">
+              <div class="s-label">🏡 Houses Powered</div>
+              <div class="s-val" id="solar-houses">0</div>
+            </div>
+            <div class="stat-box" style="border-left-color: var(--kinetic)">
+              <div class="s-label">🌍 CO₂ Saved (vs coal)</div>
+              <div class="s-val" id="solar-co2">0 kg/day</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THERMAL SIM -->
+    <div class="sim-panel" id="sim-thermal">
+      <div class="sim-box">
+        <h3>🌡️ Thermal Energy — Particle Motion</h3>
+        <p class="desc">Heat is just particles moving faster! Raise the temperature and watch the particles bounce around more. This is exactly what's happening inside every object around you.</p>
+        <div class="slider-row">
+          <label>🌡️ Temperature:</label>
+          <input type="range" id="temp-slider" min="-20" max="200" value="20" oninput="updateThermal()">
+          <span class="slider-val" id="temp-val">20°C</span>
+        </div>
+        <div class="thermal-visual">
+          <div class="thermometer-wrap">
+            <div class="thermometer">
+              <div class="therm-fill" id="therm-fill" style="height:40%; background:#5B6EF5;"></div>
+            </div>
+            <div class="therm-label" id="therm-label">20°C</div>
+          </div>
+          <div class="particle-zone" id="particle-zone">
+            <!-- particles added by JS -->
+          </div>
+          <div style="flex:1; min-width:160px;">
+            <div class="stat-box" style="margin-bottom:12px; border-left-color:var(--thermal)">
+              <div class="s-label">Average Particle Speed</div>
+              <div class="s-val" id="particle-speed">Medium</div>
+            </div>
+            <div class="stat-box" style="border-left-color:var(--electric)">
+              <div class="s-label">State of Matter</div>
+              <div class="s-val" id="matter-state" style="font-size:1.1rem;">💧 Liquid</div>
+            </div>
+          </div>
+        </div>
+        <p id="thermal-info" style="margin-top:1rem; font-size:0.92rem; color:var(--muted); line-height:1.6;"></p>
+      </div>
+    </div>
+
+    <!-- CIRCUIT SIM -->
+    <div class="sim-panel" id="sim-circuit">
+      <div class="sim-box">
+        <h3>⚡ Electric Circuit — How Electricity Flows</h3>
+        <p class="desc">Build a simple circuit! Electricity flows from the battery through wires. Change the voltage and resistance to see how it affects the current and brightness of the bulb.</p>
+        <div class="slider-row">
+          <label>🔋 Voltage (V):</label>
+          <input type="range" id="voltage" min="1" max="12" value="6" oninput="updateCircuit()">
+          <span class="slider-val" id="volt-val">6V</span>
+        </div>
+        <div class="slider-row">
+          <label>🌀 Resistance (Ω):</label>
+          <input type="range" id="resistance" min="1" max="20" value="6" oninput="updateCircuit()">
+          <span class="slider-val" id="resist-val">6Ω</span>
+        </div>
+        <div style="display:flex; gap:20px; flex-wrap:wrap; align-items:center; padding:1.5rem; background:#f8f9ff; border-radius:12px; margin-bottom:1rem; justify-content:center;">
+          <canvas id="circuit-canvas" width="360" height="200" style="max-width:100%;"></canvas>
+        </div>
+        <div class="energy-bar-wrap">
+          <div class="energy-bar-item">
+            <div class="ebar-label" style="color:#FF9500">⚡ Current (A)</div>
+            <div class="ebar-track">
+              <div class="ebar-fill" id="current-bar" style="background:#FF9500; width:50%"></div>
+            </div>
+          </div>
+          <div class="energy-bar-item">
+            <div class="ebar-label" style="color:#E84A4A">💡 Bulb Brightness</div>
+            <div class="ebar-track">
+              <div class="ebar-fill" id="bright-bar" style="background:#E84A4A; width:50%"></div>
+            </div>
+          </div>
+        </div>
+        <p id="circuit-info" style="margin-top:1rem; font-size:0.92rem; color:var(--muted); line-height:1.6;"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== QUIZ PAGE ======================== -->
+<div id="page-quiz" class="page">
+  <div class="quiz-wrap">
+    <div class="quiz-header">
+      <h2>🎯 Energy Quiz</h2>
+      <p>Test your knowledge! 10 questions about energy types and transformations.</p>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="quiz-progress" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div id="quiz-questions">
+      <!-- Generated by JS -->
+    </div>
+
+    <div class="quiz-card" id="quiz-nav-card">
+      <div class="quiz-nav">
+        <div class="score-display" id="score-display">Score: 0 / 0</div>
+        <button class="btn-next" id="btn-next" onclick="nextQuestion()">Next Question →</button>
+      </div>
+    </div>
+
+    <div class="results-card" id="results-card">
+      <div class="results-emoji" id="results-emoji">🌟</div>
+      <h2 id="results-title">Amazing Work!</h2>
+      <div class="score-big" id="results-score">10 / 10</div>
+      <p id="results-msg">You're an energy expert!</p>
+      <button class="btn-retry" onclick="restartQuiz()">🔄 Try Again</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>⚡ Energy Explorer · Built for curious minds in grades 6–9 · Science is awesome!</p>
+</footer>
+
+<script>
+// ===== PAGE NAVIGATION =====
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  const btns = document.querySelectorAll('.nav-btn');
+  const pages = ['home','learn','sim','quiz'];
+  btns[pages.indexOf(page)].classList.add('active');
+
+  if (page === 'sim') {
+    setTimeout(() => {
+      drawCoaster();
+      updateCoaster();
+      updateSolar();
+      updateThermal();
+      initParticles();
+      drawCircuit();
+      updateCircuit();
+    }, 50);
+  }
+  if (page === 'quiz') initQuiz();
+  window.scrollTo(0,0);
+}
+
+function goLearn(topic) {
+  showPage('learn');
+  showLearn(topic);
+}
+
+// ===== LEARN PAGE =====
+function showLearn(topic) {
+  document.querySelectorAll('.learn-content-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+  const panel = document.getElementById('learn-' + topic);
+  const sbar = document.getElementById('sbar-' + topic);
+  if (panel) panel.classList.add('active');
+  if (sbar) sbar.classList.add('active');
+}
+
+// ===== SIM TABS =====
+function showSim(id) {
+  document.querySelectorAll('.sim-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sim-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('sim-' + id).classList.add('active');
+  event.target.classList.add('active');
+  if (id === 'coaster') { drawCoaster(); updateCoaster(); }
+  if (id === 'solar') updateSolar();
+  if (id === 'thermal') { updateThermal(); initParticles(); }
+  if (id === 'circuit') { drawCircuit(); updateCircuit(); }
+}
+
+// ===== ROLLER COASTER SIM =====
+let coasterAnim;
+let cartPos = 0;
+let cartDirection = 1;
+
+function drawCoaster() {
+  const canvas = document.getElementById('coaster-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.parentElement.offsetWidth - 32;
+  canvas.width = W;
+  canvas.height = 220;
+  const h = parseInt(document.getElementById('hill-height').value);
+  const scaledH = Math.min(h, 180);
+
+  ctx.clearRect(0, 0, W, 220);
+
+  // Sky gradient suggestion
+  ctx.fillStyle = '#E8F0FF';
+  ctx.fillRect(0, 0, W, 220);
+
+  // Ground
+  ctx.fillStyle = '#8B7355';
+  ctx.fillRect(0, 200, W, 20);
+  ctx.fillStyle = '#5D8A3C';
+  ctx.fillRect(0, 196, W, 8);
+
+  // Track path
+  const trackY_top = 220 - scaledH - 20;
+  const trackY_bottom = 190;
+  const hillX = 80;
+  const valleyX = W * 0.55;
+  const hill2X = W * 0.78;
+  const hill2Y = 220 - (scaledH * 0.6) - 20;
+
+  ctx.beginPath();
+  ctx.moveTo(0, trackY_top);
+  ctx.bezierCurveTo(hillX - 20, trackY_top, hillX + 40, trackY_bottom, valleyX, trackY_bottom);
+  ctx.bezierCurveTo(hill2X - 40, trackY_bottom, hill2X, hill2Y, W, hill2Y);
+  ctx.strokeStyle = '#888';
+  ctx.lineWidth = 6;
+  ctx.stroke();
+  ctx.strokeStyle = '#555';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  // Support beams
+  ctx.strokeStyle = '#999';
+  ctx.lineWidth = 2;
+  for (let x = 50; x < W; x += 60) {
+    const t = (x - 0) / W;
+    const bY = trackY_bottom;
+    ctx.beginPath();
+    ctx.moveTo(x, trackY_bottom + 5);
+    ctx.lineTo(x, 198);
+    ctx.stroke();
+  }
+
+  // Cart position
+  const t = cartPos;
+  const cartX_curve = t < 0.5 ? (t * 2) : ((t - 0.5) * 2);
+  let cx, cy;
+  if (t < 0.5) {
+    const u = t * 2;
+    cx = hillX * u + 0 * (1 - u);
+    cy = trackY_top + (trackY_bottom - trackY_top) * (u * u * (3 - 2 * u));
+    cx = 10 + (valleyX - 10) * (u * u * (3 - 2 * u));
+    cy = trackY_top + (trackY_bottom - trackY_top) * (u * u * (3 - 2 * u));
+  } else {
+    const u = (t - 0.5) * 2;
+    cx = valleyX + (W - valleyX) * (u * u * (3 - 2 * u));
+    cy = trackY_bottom + (hill2Y - trackY_bottom) * (u * u * (3 - 2 * u));
+  }
+
+  // Cart
+  ctx.fillStyle = '#E84A4A';
+  ctx.beginPath();
+  ctx.roundRect(cx - 18, cy - 22, 36, 22, 4);
+  ctx.fill();
+  ctx.fillStyle = '#FF6666';
+  ctx.fillRect(cx - 14, cy - 18, 28, 10);
+  // Wheels
+  ctx.fillStyle = '#333';
+  ctx.beginPath(); ctx.arc(cx - 10, cy, 6, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx + 10, cy, 6, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#777';
+  ctx.beginPath(); ctx.arc(cx - 10, cy, 3, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx + 10, cy, 3, 0, Math.PI*2); ctx.fill();
+
+  // Height line
+  ctx.setLineDash([4, 4]);
+  ctx.strokeStyle = '#5B6EF5';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(cx, 200);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Labels
+  ctx.fillStyle = '#5B6EF5';
+  ctx.font = 'bold 12px Nunito Sans, sans-serif';
+  ctx.fillText('Height = PE', cx + 4, (cy + 200) / 2);
+
+  const heightAbove = Math.max(0, 200 - cy - 6);
+  const pePercent = Math.round((heightAbove / (scaledH + 5)) * 100);
+  const kePercent = 100 - pePercent;
+
+  document.getElementById('pe-bar').style.width = pePercent + '%';
+  document.getElementById('ke-bar').style.width = kePercent + '%';
+  document.getElementById('pe-bar').textContent = pePercent > 15 ? 'PE ' + pePercent + '%' : '';
+  document.getElementById('ke-bar').textContent = kePercent > 15 ? 'KE ' + kePercent + '%' : '';
+}
+
+function updateCoaster() {
+  const h = parseInt(document.getElementById('hill-height').value);
+  const m = parseInt(document.getElementById('cart-mass').value);
+  document.getElementById('height-val').textContent = h + 'm';
+  document.getElementById('mass-val').textContent = m + 'kg';
+  const pe = Math.round(m * 9.8 * h / 1000);
+  document.getElementById('coaster-info').textContent =
+    `At the top (${h}m high), the ${m}kg cart has about ${pe.toLocaleString()} kJ of potential energy. When it reaches the bottom, all that becomes kinetic energy — speed! The total energy stays the same the entire ride (${pe.toLocaleString()} kJ).`;
+  if (!coasterAnim) animateCoaster();
+}
+
+function animateCoaster() {
+  coasterAnim = setInterval(() => {
+    cartPos += 0.004 * cartDirection;
+    if (cartPos >= 1) { cartPos = 1; cartDirection = -1; }
+    if (cartPos <= 0) { cartPos = 0; cartDirection = 1; }
+    drawCoaster();
+  }, 30);
+}
+
+// ===== SOLAR PANEL SIM =====
+function updateSolar() {
+  const intensity = parseInt(document.getElementById('sun-intensity').value);
+  const panels = parseInt(document.getElementById('panel-count').value);
+  document.getElementById('sun-val').textContent = intensity + '%';
+  document.getElementById('panel-val').textContent = panels + ' panel' + (panels > 1 ? 's' : '');
+
+  const powerPerPanel = 400;
+  const totalPower = Math.round(panels * powerPerPanel * (intensity / 100));
+  const dailyEnergy = Math.round(totalPower * 5 / 100) / 10;
+  const houses = Math.round((dailyEnergy / 30) * 10) / 10;
+  const co2 = Math.round(dailyEnergy * 0.82 * 10) / 10;
+
+  document.getElementById('solar-power').textContent = totalPower >= 1000 ? (totalPower/1000).toFixed(1) + ' kW' : totalPower + ' W';
+  document.getElementById('solar-daily').textContent = dailyEnergy + ' kWh';
+  document.getElementById('solar-houses').textContent = houses;
+  document.getElementById('solar-co2').textContent = co2 + ' kg/day';
+
+  const sky = document.getElementById('solar-sky');
+  const r = Math.round(135 + intensity * 0.65);
+  const g = Math.round(206 + intensity * 0.3);
+  const b = Math.round(235 - intensity * 0.5);
+  sky.style.background = `rgb(${r},${g},${b})`;
+
+  const sunEl = document.getElementById('sun-emoji');
+  sunEl.style.fontSize = (2 + intensity * 0.03) + 'rem';
+  sunEl.style.opacity = 0.4 + intensity * 0.006;
+
+  const grid = document.getElementById('panel-grid');
+  grid.innerHTML = '';
+  const maxDisplay = Math.min(panels, 20);
+  for (let i = 0; i < maxDisplay; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'panel-cell';
+    const brightness = Math.round(30 + intensity * 0.5);
+    cell.style.background = `rgb(${brightness}, ${brightness+20}, ${brightness+90})`;
+    cell.style.boxShadow = intensity > 40 ? `0 0 ${Math.round(intensity/10)}px rgba(255,220,100,0.4)` : 'none';
+    grid.appendChild(cell);
+  }
+}
+
+// ===== THERMAL SIM =====
+let particles = [];
+let thermalAnim;
+
+function initParticles() {
+  const zone = document.getElementById('particle-zone');
+  if (!zone) return;
+  zone.innerHTML = '';
+  particles = [];
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const x = 15 + Math.random() * (zone.offsetWidth - 40);
+    const y = 15 + Math.random() * (zone.offsetHeight - 40);
+    p.style.left = x + 'px';
+    p.style.top = y + 'px';
+    zone.appendChild(p);
+    particles.push({
+      el: p,
+      x, y,
+      vx: (Math.random() - 0.5) * 2,
+      vy: (Math.random() - 0.5) * 2
+    });
+  }
+  if (!thermalAnim) animateParticles();
+}
+
+function animateParticles() {
+  const zone = document.getElementById('particle-zone');
+  if (!zone) return;
+  const temp = parseInt(document.getElementById('temp-slider')?.value || 20);
+  const speed = 0.5 + ((temp + 20) / 220) * 5;
+
+  particles.forEach(p => {
+    p.x += p.vx * speed;
+    p.y += p.vy * speed;
+    const W = zone.offsetWidth - 20;
+    const H = zone.offsetHeight - 20;
+    if (p.x < 5 || p.x > W) { p.vx *= -1; p.x = Math.max(5, Math.min(W, p.x)); }
+    if (p.y < 5 || p.y > H) { p.vy *= -1; p.y = Math.max(5, Math.min(H, p.y)); }
+    p.el.style.left = p.x + 'px';
+    p.el.style.top = p.y + 'px';
+  });
+
+  thermalAnim = requestAnimationFrame(animateParticles);
+}
+
+function updateThermal() {
+  const temp = parseInt(document.getElementById('temp-slider').value);
+  document.getElementById('temp-val').textContent = temp + '°C';
+  document.getElementById('therm-label').textContent = temp + '°C';
+
+  const pct = Math.round(((temp + 20) / 220) * 100);
+  const therm = document.getElementById('therm-fill');
+  therm.style.height = pct + '%';
+
+  if (temp < 0) {
+    therm.style.background = '#5B6EF5';
+  } else if (temp < 60) {
+    therm.style.background = '#FF9500';
+  } else {
+    therm.style.background = '#E84A4A';
+  }
+
+  const speed = temp < 0 ? 'Very Slow' : temp < 40 ? 'Slow' : temp < 80 ? 'Medium' : temp < 130 ? 'Fast' : 'Very Fast';
+  document.getElementById('particle-speed').textContent = speed;
+
+  let state;
+  if (temp < 0) state = '🧊 Solid (Ice)';
+  else if (temp < 100) state = '💧 Liquid';
+  else state = '💨 Gas (Steam)';
+  document.getElementById('matter-state').textContent = state;
+
+  const colors = { cold: '#5B6EF5', warm: '#FF9500', hot: '#E84A4A' };
+  const pColor = temp < 0 ? colors.cold : temp < 60 ? colors.warm : colors.hot;
+  particles.forEach(p => { p.el.style.background = pColor; });
+
+  const msgs = {
+    cold: 'At freezing temperatures, particles move very slowly and pack tightly together — that\'s why water becomes solid ice!',
+    warm: 'At room temperature, particles in water move freely past each other. That\'s what makes liquids flow!',
+    hot: 'At high temperatures, particles move so fast they break free from each other and become a gas like steam!'
+  };
+  document.getElementById('thermal-info').textContent =
+    temp < 0 ? msgs.cold : temp < 100 ? msgs.warm : msgs.hot;
+}
+
+// ===== CIRCUIT SIM =====
+function drawCircuit() {
+  const canvas = document.getElementById('circuit-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, 360, 200);
+
+  const volt = parseInt(document.getElementById('voltage')?.value || 6);
+  const res = parseInt(document.getElementById('resistance')?.value || 6);
+  const current = volt / res;
+  const brightness = Math.min(1, current / 2);
+
+  // Circuit path
+  ctx.strokeStyle = '#333';
+  ctx.lineWidth = 4;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  ctx.moveTo(60, 40);
+  ctx.lineTo(300, 40);
+  ctx.lineTo(300, 160);
+  ctx.lineTo(60, 160);
+  ctx.lineTo(60, 40);
+  ctx.stroke();
+
+  // Battery (left)
+  ctx.fillStyle = '#29B86D';
+  ctx.fillRect(40, 90, 40, 20);
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 11px Nunito Sans, sans-serif';
+  ctx.fillText(volt + 'V', 44, 104);
+  ctx.fillStyle = '#29B86D';
+  ctx.fillRect(44, 80, 6, 40);
+  ctx.fillStyle = '#29B86D';
+  ctx.fillRect(50, 85, 3, 30);
+
+  // Resistor (top)
+  ctx.fillStyle = '#FF9500';
+  ctx.fillRect(140, 28, 80, 24);
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 11px Nunito Sans, sans-serif';
+  ctx.fillText(res + 'Ω', 164, 44);
+
+  // Light bulb (right)
+  const bulbX = 300, bulbY = 100;
+  if (brightness > 0.05) {
+    ctx.beginPath();
+    ctx.arc(bulbX, bulbY, 20 + brightness * 10, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255, 220, 50, ${brightness * 0.3})`;
+    ctx.fill();
+  }
+  ctx.beginPath();
+  ctx.arc(bulbX, bulbY, 18, 0, Math.PI * 2);
+  const r = Math.round(255);
+  const g = Math.round(brightness * 220);
+  const b = Math.round(50 * (1 - brightness));
+  ctx.fillStyle = brightness > 0.1 ? `rgb(${r},${g},${b})` : '#ddd';
+  ctx.fill();
+  ctx.strokeStyle = '#888';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  ctx.fillStyle = '#333';
+  ctx.font = 'bold 16px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('💡', bulbX, bulbY + 6);
+
+  // Arrow showing current direction (animated)
+  const arrowPositions = [
+    {x: 180, y: 40, dir: 'right'},
+    {x: 300, y: 100, dir: 'down'},
+    {x: 180, y: 160, dir: 'left'},
+    {x: 60, y: 100, dir: 'up'}
+  ];
+
+  arrowPositions.forEach(a => {
+    ctx.fillStyle = `rgba(91, 110, 245, ${0.5 + brightness * 0.5})`;
+    ctx.font = '14px sans-serif';
+    ctx.textAlign = 'center';
+    const arrows = { right: '→', down: '↓', left: '←', up: '↑' };
+    if (a.dir === 'right' || a.dir === 'left') ctx.fillText(arrows[a.dir], a.x, a.y - 8);
+    else ctx.fillText(arrows[a.dir], a.x + 12, a.y);
+  });
+
+  // Labels
+  ctx.fillStyle = '#5B6EF5';
+  ctx.font = 'bold 10px Nunito Sans, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('electrons flow', 180, 175);
+
+  ctx.textAlign = 'left';
+}
+
+function updateCircuit() {
+  const volt = parseInt(document.getElementById('voltage').value);
+  const res = parseInt(document.getElementById('resistance').value);
+  document.getElementById('volt-val').textContent = volt + 'V';
+  document.getElementById('resist-val').textContent = res + 'Ω';
+
+  const current = parseFloat((volt / res).toFixed(2));
+  const power = parseFloat((volt * current).toFixed(1));
+  const currentPct = Math.round(Math.min(100, (current / 2) * 100));
+  const brightPct = currentPct;
+
+  document.getElementById('current-bar').style.width = currentPct + '%';
+  document.getElementById('current-bar').textContent = currentPct > 20 ? current + 'A' : '';
+  document.getElementById('bright-bar').style.width = brightPct + '%';
+  document.getElementById('bright-bar').textContent = brightPct > 20 ? brightPct + '%' : '';
+
+  document.getElementById('circuit-info').textContent =
+    `With ${volt}V and ${res}Ω resistance, the current is ${current}A (Ohm's Law: I = V ÷ R). The bulb uses ${power}W of power. Higher voltage OR lower resistance = more current = brighter bulb!`;
+
+  drawCircuit();
+}
+
+// ===== QUIZ =====
+const questions = [
+  {
+    q: "A ball rolling down a hill is an example of which type of energy?",
+    opts: ["Potential energy", "Kinetic energy", "Chemical energy", "Nuclear energy"],
+    ans: 1,
+    explain: "Kinetic energy is the energy of MOTION. A rolling ball is moving, so it has kinetic energy!"
+  },
+  {
+    q: "What does the Law of Conservation of Energy state?",
+    opts: ["Energy can be created but not destroyed", "Energy can be destroyed but not created", "Energy cannot be created or destroyed, only transformed", "Energy always increases over time"],
+    ans: 2,
+    explain: "Energy can never be created from nothing or disappear — it only changes forms. A roller coaster converts potential energy to kinetic energy, but the total stays the same!"
+  },
+  {
+    q: "Which energy type is stored in food and batteries?",
+    opts: ["Thermal energy", "Nuclear energy", "Chemical energy", "Light energy"],
+    ans: 2,
+    explain: "Chemical energy is stored in the bonds between atoms in molecules. Food and batteries both release this energy during chemical reactions!"
+  },
+  {
+    q: "A book sitting on a high shelf has a lot of which type of energy?",
+    opts: ["Kinetic energy", "Thermal energy", "Gravitational potential energy", "Electrical energy"],
+    ans: 2,
+    explain: "The book is high up and not moving, so it has gravitational potential energy. If it falls, that converts to kinetic energy on the way down!"
+  },
+  {
+    q: "What makes something hotter — particles moving faster or slower?",
+    opts: ["Slower — slow particles have more energy", "Faster — faster movement = more thermal energy", "It doesn't matter", "The color of the object"],
+    ans: 1,
+    explain: "Temperature is a measure of how fast particles are vibrating and moving. Faster particles = higher temperature = more thermal energy!"
+  },
+  {
+    q: "Solar panels convert sunlight into which form of energy?",
+    opts: ["Thermal energy (heat)", "Chemical energy", "Nuclear energy", "Electrical energy"],
+    ans: 3,
+    explain: "Solar panels (photovoltaic cells) use the energy in light particles (photons) to push electrons, creating electric current — electrical energy!"
+  },
+  {
+    q: "Lightning is a dramatic example of which energy type?",
+    opts: ["Nuclear energy", "Electrical energy", "Chemical energy", "Mechanical energy"],
+    ans: 1,
+    explain: "Lightning is a massive discharge of electrical energy — billions of electrons moving at once! It's so hot (5× the Sun's surface) it makes the air glow."
+  },
+  {
+    q: "In a roller coaster, energy transformation goes from _____ at the top to _____ at the bottom.",
+    opts: ["Kinetic → Potential", "Chemical → Thermal", "Potential → Kinetic", "Nuclear → Light"],
+    ans: 2,
+    explain: "At the top, you have maximum gravitational potential energy (stored height). Racing down, that converts to kinetic energy (speed). The total energy stays the same!"
+  },
+  {
+    q: "Nuclear power plants generate electricity by doing what to atoms?",
+    opts: ["Cooling them down", "Painting them a different color", "Splitting them apart (fission)", "Gluing them together"],
+    ans: 2,
+    explain: "Nuclear fission means splitting large atoms (like uranium). This releases enormous heat, which boils water into steam that spins turbines to make electricity!"
+  },
+  {
+    q: "What is true about energy transformations? (When a light bulb glows)",
+    opts: ["Electrical energy is destroyed and replaced by light", "Electrical energy transforms into light AND heat energy", "New energy is created when the bulb glows", "Energy stays as electrical energy inside the bulb"],
+    ans: 1,
+    explain: "A light bulb converts electrical energy into BOTH light energy AND thermal energy (heat). Energy is never destroyed — it transforms! That's why bulbs get warm."
+  }
+];
+
+let currentQ = 0;
+let score = 0;
+let answered = false;
+
+function initQuiz() {
+  currentQ = 0;
+  score = 0;
+  answered = false;
+  document.getElementById('results-card').classList.remove('show');
+  document.getElementById('quiz-nav-card').style.display = 'block';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  document.getElementById('quiz-progress').style.width = (currentQ / questions.length * 100) + '%';
+  document.getElementById('score-display').textContent = `Score: ${score} / ${currentQ}`;
+  document.getElementById('btn-next').classList.remove('show');
+
+  const container = document.getElementById('quiz-questions');
+  container.innerHTML = `
+    <div class="quiz-card">
+      <div class="q-number">Question ${currentQ + 1} of ${questions.length}</div>
+      <div class="q-text">${q.q}</div>
+      <div class="q-options">
+        ${q.opts.map((opt, i) => `
+          <button class="q-option" onclick="selectAnswer(${i})" id="opt-${i}">${opt}</button>
+        `).join('')}
+      </div>
+      <div class="q-feedback" id="q-feedback"></div>
+    </div>
+  `;
+  answered = false;
+}
+
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  const q = questions[currentQ];
+  const opts = document.querySelectorAll('.q-option');
+  opts.forEach(o => o.disabled = true);
+
+  if (idx === q.ans) {
+    opts[idx].classList.add('correct');
+    score++;
+    showFeedback(true, '✅ ' + q.explain);
+  } else {
+    opts[idx].classList.add('wrong');
+    opts[q.ans].classList.add('correct');
+    showFeedback(false, '❌ Not quite! ' + q.explain);
+  }
+
+  document.getElementById('score-display').textContent = `Score: ${score} / ${currentQ + 1}`;
+  document.getElementById('btn-next').classList.add('show');
+}
+
+function showFeedback(correct, msg) {
+  const fb = document.getElementById('q-feedback');
+  fb.className = 'q-feedback show ' + (correct ? 'correct' : 'wrong');
+  fb.textContent = msg;
+}
+
+function nextQuestion() {
+  currentQ++;
+  if (currentQ >= questions.length) {
+    showResults();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showResults() {
+  document.getElementById('quiz-questions').innerHTML = '';
+  document.getElementById('quiz-nav-card').style.display = 'none';
+  document.getElementById('quiz-progress').style.width = '100%';
+  const pct = Math.round((score / questions.length) * 100);
+  const results = document.getElementById('results-card');
+  results.classList.add('show');
+  document.getElementById('results-score').textContent = score + ' / ' + questions.length;
+
+  let emoji, title, msg;
+  if (pct >= 90) { emoji = '🏆'; title = 'You\'re an Energy Expert!'; msg = 'Incredible! You aced it. You know your energy science!'; }
+  else if (pct >= 70) { emoji = '⭐'; title = 'Great Job!'; msg = 'Solid understanding of energy concepts. Review a few topics and you\'ll be perfect!'; }
+  else if (pct >= 50) { emoji = '💪'; title = 'Good Effort!'; msg = 'You\'re getting there! Head back to the Learn section to review the topics you missed.'; }
+  else { emoji = '📚'; title = 'Keep Learning!'; msg = 'Energy science takes practice. Go explore the Learn and Simulation sections, then try again!'; }
+
+  document.getElementById('results-emoji').textContent = emoji;
+  document.getElementById('results-title').textContent = title;
+  document.getElementById('results-msg').textContent = msg;
+}
+
+function restartQuiz() {
+  initQuiz();
+}
+
+// ===== INIT =====
+window.addEventListener('load', () => {
+  updateSolar();
+  initQuiz();
+});
+</script>
+</body>
+</html>
